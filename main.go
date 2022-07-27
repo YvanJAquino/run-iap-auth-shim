@@ -38,7 +38,7 @@ type Router struct {
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	targetURL := "https://hello-a67fdjzmma-uc.a.run.app"
-
+	r.logger.Println("IAP-HEADER: X-Goog-Authenticated-User-Email: ", req.Header.Get("X-Goog-Authenticated-User-Email"))
 	for key, values := range req.Header {
 		for idx := range values {
 			if idx == 0 {
