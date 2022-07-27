@@ -38,5 +38,16 @@ type Router struct {
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	targetURL := "https://hello-a67fdjzmma-uc.a.run.app"
+
+	for key, values := range req.Header {
+		for idx := range values {
+			if idx == 0 {
+				w.Header().Set(key, values[idx])
+			} else {
+				w.Header().Add(key, values[idx])
+			}
+		}
+	}
+
 	http.Redirect(w, req, targetURL, http.StatusPermanentRedirect)
 }

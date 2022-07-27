@@ -9,7 +9,7 @@ steps:
     docker build -t gcr.io/$PROJECT_ID/${_SERVICE} . &&
     docker push gcr.io/$PROJECT_ID/${_SERVICE}
 
-- id: gcloud-run-deploy-${_SERVICE}
+- id: gcloud-run-deploy-service
   waitFor: ['docker-build-push-service']
   name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: bash
