@@ -48,6 +48,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
+	w.Header().Set("X-Goog-Authenticated-User-Email", req.Header.Get("X-Goog-Authenticated-User-Email"))
 
 	http.Redirect(w, req, targetURL, http.StatusPermanentRedirect)
 }
