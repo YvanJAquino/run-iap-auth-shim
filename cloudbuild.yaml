@@ -3,45 +3,57 @@ steps:
   waitFor: ['-']
   name: gcr.io/cloud-builders/docker
   dir: iap-shim
-  script: |
-    docker build -t gcr.io/$PROJECT_ID/${_SERVICE1} . &&
-    docker push gcr.io/$PROJECT_ID/${_SERVICE1}
+  entrypoint: bash
+  args:
+    - c
+    - |
+      docker build -t gcr.io/$PROJECT_ID/${_SERVICE1} . &&
+      docker push gcr.io/$PROJECT_ID/${_SERVICE1}
 
 - id: docker-build-push-service-proxy
   waitFor: ['-']
   name: gcr.io/cloud-builders/docker
   dir: service-proxy
-  script: |
-    docker build -t gcr.io/$PROJECT_ID/${_SERVICE2} . &&
-    docker push gcr.io/$PROJECT_ID/${_SERVICE2}
+  entrypoint: bash
+  args:
+    - c
+    - |
+      docker build -t gcr.io/$PROJECT_ID/${_SERVICE2} . &&
+      docker push gcr.io/$PROJECT_ID/${_SERVICE2}
 
 - id: gcloud-run-deploy-iap-shim
   waitFor: ['docker-build-push-iap-shim']
   name: gcr.io/google.com/cloudsdktool/cloud-sdk
-  script: |
-    gcloud run deploy ${_SERVICE1} \
-      --project $PROJECT_ID \
-      --image gcr.io/$PROJECT_ID/${_SERVICE1} \
-      --timeout 5m \
-      --region ${_REGION} \
-      --no-cpu-throttling \
-      --min-instances 0 \
-      --max-instances 5 \
-      --allow-unauthenticated
+  entrypoint: bash
+  args:
+    - c
+    - |
+      gcloud run deploy ${_SERVICE1} \
+        --project $PROJECT_ID \
+        --image gcr.io/$PROJECT_ID/${_SERVICE1} \
+        --timeout 5m \
+        --region ${_REGION} \
+        --no-cpu-throttling \
+        --min-instances 0 \
+        --max-instances 5 \
+        --allow-unauthenticated
 
 - id: gcloud-run-deploy-service-proxy
   waitFor: ['docker-build-push-service-proxy']
   name: gcr.io/google.com/cloudsdktool/cloud-sdk
-  script: |
-    gcloud run deploy ${_SERVICE2} \
-      --project $PROJECT_ID \
-      --image gcr.io/$PROJECT_ID/${_SERVICE2} \
-      --timeout 5m \
-      --region ${_REGION} \
-      --no-cpu-throttling \
-      --min-instances 0 \
-      --max-instances 5 \
-      --allow-unauthenticated
+  entrypoint: bash
+  args:
+    - c
+    - |
+      gcloud run deploy ${_SERVICE2} \
+        --project $PROJECT_ID \
+        --image gcr.io/$PROJECT_ID/${_SERVICE2} \
+        --timeout 5m \
+        --region ${_REGION} \
+        --no-cpu-throttling \
+        --min-instances 0 \
+        --max-instances 5 \
+        --allow-unauthenticated
 
 substitutions:
   _SERVICE1: auth-shim
