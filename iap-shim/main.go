@@ -5,7 +5,9 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"unsafe"
 )
 
 func main() {
@@ -37,15 +39,11 @@ type Router struct {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	targetURL := "https://hello-a67fdjzmma-uc.a.run.app"
-	http.Redirect(w, req, targetURL, http.StatusMovedPermanently)
-	for key, values := range req.Header {
-		for idx := range values {
-			if idx == 0 {
-				w.Header().Set(key, values[idx])
-			} else {
-				w.Header().Add(key, values[idx])
-			}
-		}
+	proxyURL, err := url.Parse("https://hello-a67fdjzmma-uc.a.run.app")
+	if err != nil {
+		r.logger.Fatal(err)
 	}
+	values := *(*url.Values)(unsafe.Pointer(&req.Header))
+	proxyURL.RawQuery = values.Encode()
+	http.Redirect(w, req, proxyURL.String(), http.StatusMovedPermanently)
 }
