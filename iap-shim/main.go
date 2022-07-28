@@ -39,10 +39,13 @@ type Router struct {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	proxyURL, err := url.Parse("https://hello-a67fdjzmma-uc.a.run.app")
+	proxyURL, err := url.Parse("https://service-proxy-a67fdjzmma-uc.a.run.app")
 	if err != nil {
 		r.logger.Fatal(err)
 	}
+	// Convert url.Values into http.Header
+	// Both url.Values and http.Header are map[string][]string types
+	// Use unsafe Pointer for quick conversion.  
 	values := *(*url.Values)(unsafe.Pointer(&req.Header))
 	proxyURL.RawQuery = values.Encode()
 	http.Redirect(w, req, proxyURL.String(), http.StatusMovedPermanently)
